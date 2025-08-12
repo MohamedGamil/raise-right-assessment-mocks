@@ -17,6 +17,22 @@ Simply run: `npm install`
     npx concurrently "npm:serve-rest" "npm:serve-graphql" "npm:serve-ws"
     ```
 
+- **Alternatively, use docker to quickly run all mock APIs:**
+    ```bash
+    docker compose up --build -d
+    ```
+
+- *To quickly test APIs connections, you may use the following commands:*
+    ```bash
+    # Test RESTful API
+    curl http://localhost:4000/api/campaigns
+
+    # Test GraphQL API
+    curl -X POST http://localhost:4001/ \
+        -H "Content-Type: application/json" \
+        --data '{"query":"query ($id:ID!){ campaign(id:$id){ id name goal currentAmount description donors{ name amount } } }","variables":{"id":"1"}}'
+    ```
+    > You can test Websocket API by previwing `ws-test.html` file in browser.
 
 ## Mock Endpoints
 - **REST**
