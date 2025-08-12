@@ -3,9 +3,25 @@
   "version": "1.0.0",
   "description": "Raise Right - Mock APIs",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+   "scripts": {
+    "start:rest": "node rest/index.js",
+    "start:graphql": "node graphql/index.js",
+    "start:ws": "node websocket/index.js",
+    "start:all": "concurrently \"npm:serve-rest\" \"npm:serve-graphql\" \"npm:serve-ws\"",
+    "serve-rest": "node rest/index.js",
+    "serve-graphql": "node graphql/index.js",
+    "serve-ws": "node websocket/index.js"
   },
+  "dependencies": {
+    "apollo-server": "^3.12.0",
+    "concurrently": "^8.2.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "graphql": "^16.7.1",
+    "uuid": "^9.0.0",
+    "ws": "^8.13.0"
+  },
+  "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/MohamedGamil/raise-right-assessment-mocks.git"
