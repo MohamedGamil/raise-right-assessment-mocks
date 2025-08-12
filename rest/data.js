@@ -3,7 +3,7 @@ module.exports = {
   campaigns: [
     {
       id: "1",
-      name: "School Library Upgrade",
+      name: "Masjid Area Extension",
       goal: 5000,
       currentAmount: 2200,
       imageUrl: "https://picsum.photos/seed/lib1/600/400"

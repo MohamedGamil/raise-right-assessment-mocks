@@ -5,7 +5,7 @@ const campaigns = [
     name: "Masjid Area Extension",
     goal: 5000,
     currentAmount: 2200,
-    description: "Refurnish the library with new books and shelves.",
+    description: "Refurnish and extend the masjid area.",
     donors: [
       { name: "Lina", amount: 200 },
       { name: "Youssef", amount: 50 }

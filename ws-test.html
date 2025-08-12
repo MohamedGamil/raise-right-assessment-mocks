@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Raise Right WS Test</title>
+</head>
+<body>
+  <h1>WebSocket Test – Raise Right</h1>
+  <div>
+    <label>
+      Campaign ID: 
+      <input id="campaignId" value="1">
+    </label>
+    <label>
+      Amount: 
+      <input id="amount" type="number" value="50">
+    </label>
+    <label>
+      Donor: 
+      <input id="donor" value="Tester">
+    </label>
+    <button id="sendDonation">Send Donation</button>
+  </div>
+
+  <h2>Messages</h2>
+  <pre id="log"></pre>
+
+  <script>
+    const logEl = document.getElementById('log');
+    const ws = new WebSocket('ws://localhost:4002');
+
+    function log(msg) {
+      logEl.textContent += msg + '\n';
+    }
+
+    ws.onopen = () => {
+      log('Connected to WebSocket server.');
+    };
+
+    ws.onmessage = (event) => {
+      log('Received: ' + event.data);
+    };
+
+    ws.onclose = () => {
+      log('Connection closed.');
+    };
+
+    ws.onerror = (err) => {
+      log('Error: ' + err);
+    };
+
+    document.getElementById('sendDonation').addEventListener('click', () => {
+      const campaignId = document.getElementById('campaignId').value;
+      const amount = Number(document.getElementById('amount').value);
+      const donor = document.getElementById('donor').value;
+      const message = {
+        type: 'donation',
+        campaignId,
+        amount,
+        donor
+      };
+      ws.send(JSON.stringify(message));
+      log('Sent: ' + JSON.stringify(message));
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  mock-apis:
+    build: .
+    container_name: raise_right_mock_apis
+    command: npm run start:all
+    ports:
+      - "4000:4000"
+      - "4001:4001"
+      - "4002:4002"
+    environment:
+      - REST_PORT=4000
+      - GRAPHQL_PORT=4001
+      - WS_PORT=4002
+    restart: unless-stopped
