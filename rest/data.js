@@ -21,6 +21,27 @@ module.exports = {
       goal: 12000,
       currentAmount: 7600,
       imageUrl: "https://picsum.photos/seed/tutor1/600/400"
+    },
+    {
+      id: "4",
+      name: "School Library Upgrade",
+      goal: 19050,
+      currentAmount: 7600,
+      imageUrl: "https://picsum.photos/seed/lib2/600/400"
+    },
+    {
+      id: "5",
+      name: "Community Garden",
+      goal: 3000,
+      currentAmount: 1200,
+      imageUrl: "https://picsum.photos/seed/garden1/600/400"
+    },
+    {
+      id: "6",
+      name: "Sports Equipment Fund",
+      goal: 4500,
+      currentAmount: 2000,
+      imageUrl: "https://picsum.photos/seed/sports1/600/400"
     }
   ]
 };

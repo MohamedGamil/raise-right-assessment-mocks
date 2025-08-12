@@ -26,7 +26,31 @@ const campaigns = [
     currentAmount: 7600,
     description: "Hire part-time tutors for math and science.",
     donors: []
-  }
+  },
+  {
+    id: "4",
+    name: "School Library Upgrade",
+    goal: 19050,
+    currentAmount: 7600,
+    description: "Upgrade the school library with new books and resources.",
+    donors: []
+  },
+  {
+    id: "5",
+    name: "Community Garden",
+    goal: 3000,
+    currentAmount: 1200,
+    description: "Create a community garden for local residents.",
+    donors: [{ name: "Omar", amount: 50 }]
+  },
+  {
+    id: "6",
+    name: "Sports Equipment Fund",
+    goal: 4500,
+    currentAmount: 2000,
+    description: "Purchase new sports equipment for the school.",
+    donors: []
+  },
 ];
 
 module.exports = { campaigns };
