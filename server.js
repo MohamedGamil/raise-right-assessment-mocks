@@ -89,10 +89,10 @@ const resolvers = {
   }
 };
 
-async function mountGraphQL(app_) {
+async function mountGraphQL() {
   const apollo = new ApolloServer({ typeDefs, resolvers });
   await apollo.start();
-  apollo.applyMiddleware({ app_, path: '/graphql' });
+  apollo.applyMiddleware({ app, path: '/graphql' });
 }
 
 
@@ -173,7 +173,7 @@ function mountWebSocket(server) {
       if (client.readyState === WebSocket.OPEN) client.send(payload);
     });
     console.log('Simulated donation broadcast', ev);
-  }, 15000);
+  }, 7000);
 }
 
 
@@ -181,7 +181,7 @@ function mountWebSocket(server) {
 // Server startup
 // ---------------------------------------------
 (async () => {
-  await mountGraphQL(app);
+  await mountGraphQL();
 
   const server = http.createServer(app);
   mountWebSocket(server);
