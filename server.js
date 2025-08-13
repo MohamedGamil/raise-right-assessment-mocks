@@ -64,6 +64,7 @@ const typeDefs = gql`
     goal: Int
     currentAmount: Int
     description: String
+    imageUrl: String
     donors: [Donor!]
   }
 

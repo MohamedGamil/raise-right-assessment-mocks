@@ -26,7 +26,7 @@ Simply run: `npm install`
     # Test GraphQL API
     curl -X POST http://localhost:4001/ \
         -H "Content-Type: application/json" \
-        --data '{"query":"query ($id:ID!){ campaign(id:$id){ id name goal currentAmount description donors{ name amount } } }","variables":{"id":"1"}}'
+        --data '{"query":"query ($id:ID!){ campaign(id:$id){ id name goal currentAmount description imageUrl donors{ name amount } } }","variables":{"id":"1"}}'
     ```
     > You can test Websocket API by previwing `ws-test.html` file in browser.
 
@@ -46,6 +46,7 @@ Simply run: `npm install`
         goal
         currentAmount
         description
+        imageUrl
         donors { name amount }
       }
     }
