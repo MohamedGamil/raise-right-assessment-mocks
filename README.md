@@ -24,7 +24,7 @@ Simply run: `npm install`
     curl http://localhost:4000/api/campaigns
 
     # Test GraphQL API
-    curl -X POST http://localhost:4001/ \
+    curl -X POST http://localhost:4000/graphql \
         -H "Content-Type: application/json" \
         --data '{"query":"query ($id:ID!){ campaign(id:$id){ id name goal currentAmount description imageUrl donors{ name amount } } }","variables":{"id":"1"}}'
     ```
