@@ -12,4 +12,4 @@ RUN npm install --production
 COPY . .
 
 # Default command (overridden in docker-compose)
-CMD ["node", "rest/index.js"]
+CMD ["node", "server.js"]

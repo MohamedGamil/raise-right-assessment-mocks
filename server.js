@@ -7,14 +7,27 @@ const WebSocket = require('ws');
 const { v4: uuidv4 } = require('uuid');
 
 // Shared campaign data (moved to single file for consistency)
-const { campaigns } = require('./rest/data');
+const { campaigns } = require('./graphql/data');
+
 
 // ---------------------------------------------
 // REST API
 // ---------------------------------------------
 const app = express();
-app.use(cors());
+
+app.set('trust proxy', 1);
+
+app.use(cors({
+  origin: '*', // or specific origin
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type']
+}));
+
 app.use(express.json());
+
+// --- Health & root ---
+app.get('/', (_req, res) => res.send('Raise Right mock server is running.'));
+app.get('/health', (_req, res) => res.status(200).json({ ok: true }));
 
 app.get('/api/campaigns', (req, res) => {
   res.json(campaigns);
@@ -34,6 +47,7 @@ app.post('/api/campaigns/:id/donate', (req, res) => {
   c.currentAmount += a;
   res.json({ success: true, campaign: c });
 });
+
 
 // ---------------------------------------------
 // GraphQL API
@@ -60,12 +74,11 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
-    campaign: (_, { id }) => {
+    campaign: (_parent, { id }) => {
       const item = campaigns.find(c => c.id === id);
       if (!item) return null;
       const lastDigit = Number(String(id).slice(-1)) || 0;
-      const chance = (lastDigit % 3) === 0 ? 0.5 : 0.2;
-
+      const chance = (lastDigit % 3) === 0 ? 0.5 : 0.2; // simulate partial errors
       if (Math.random() < chance) {
         throw new GraphQLError('Partial data: donors could not be loaded', {
           extensions: { code: 'DONORS_PARTIAL_FAILURE' }
@@ -76,37 +89,30 @@ const resolvers = {
   }
 };
 
-async function startApollo() {
-  const apolloServer = new ApolloServer({
-    typeDefs,
-    resolvers
-  });
-  await apolloServer.start();
-  apolloServer.applyMiddleware({ app, path: '/graphql' });
+async function mountGraphQL(app_) {
+  const apollo = new ApolloServer({ typeDefs, resolvers });
+  await apollo.start();
+  apollo.applyMiddleware({ app_, path: '/graphql' });
 }
+
 
 // ---------------------------------------------
 // WebSocket Server
 // ---------------------------------------------
-function setupWebSocket(server) {
+function mountWebSocket(server) {
   const wss = new WebSocket.Server({ server, path: '/ws' });
 
-  function broadcast(obj) {
-    const str = JSON.stringify(obj);
-    wss.clients.forEach(client => {
-      if (client.readyState === WebSocket.OPEN) client.send(str);
-    });
-  }
-
+  // Keep-alive (30s ping); required on many PaaS reverse proxies
+  function heartbeat() { this.isAlive = true; }
   wss.on('connection', (ws) => {
-    console.log('WebSocket client connected');
+    ws.isAlive = true;
+    ws.on('pong', heartbeat);
+
+    console.log('WS client connected');
     ws.send(JSON.stringify({ type: 'welcome', timestamp: Date.now() }));
     ws.send(JSON.stringify({
       type: 'snapshot',
-      campaigns: campaigns.map(c => ({
-        id: c.id,
-        currentAmount: c.currentAmount
-      }))
+      campaigns: campaigns.map(c => ({ id: c.id, currentAmount: c.currentAmount }))
     }));
 
     ws.on('message', (msg) => {
@@ -125,7 +131,11 @@ function setupWebSocket(server) {
               id: uuidv4(),
               timestamp: Date.now()
             };
-            broadcast(ev);
+            // broadcast
+            const payload = JSON.stringify(ev);
+            wss.clients.forEach(client => {
+              if (client.readyState === WebSocket.OPEN) client.send(payload);
+            });
           }
         }
       } catch (e) {
@@ -134,7 +144,18 @@ function setupWebSocket(server) {
     });
   });
 
-  // Simulate random donations
+  // Ping all clients every 30s; terminate dead sockets
+  const interval = setInterval(() => {
+    wss.clients.forEach((ws) => {
+      if (ws.isAlive === false) return ws.terminate();
+      ws.isAlive = false;
+      ws.ping();
+    });
+  }, 30000);
+
+  wss.on('close', () => clearInterval(interval));
+
+  // Simulated donations every 15s
   setInterval(() => {
     const pick = campaigns[Math.floor(Math.random() * campaigns.length)];
     const amount = Math.floor(Math.random() * 200) + 10;
@@ -147,26 +168,39 @@ function setupWebSocket(server) {
       id: uuidv4(),
       timestamp: Date.now()
     };
-    broadcast(ev);
+    const payload = JSON.stringify(ev);
+    wss.clients.forEach(client => {
+      if (client.readyState === WebSocket.OPEN) client.send(payload);
+    });
     console.log('Simulated donation broadcast', ev);
   }, 15000);
 }
 
+
 // ---------------------------------------------
 // Server startup
 // ---------------------------------------------
-async function startServer() {
-  await startApollo();
+(async () => {
+  await mountGraphQL(app);
+
   const server = http.createServer(app);
-  setupWebSocket(server);
+  mountWebSocket(server);
 
-  const PORT = process.env.PORT || 4000;
+  const PORT = process.env.PORT || 3000; // Railway injects PORT
   server.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-    console.log(`REST API at     http://localhost:${PORT}/api/campaigns`);
-    console.log(`GraphQL API at  http://localhost:${PORT}/graphql`);
-    console.log(`WebSocket at    ws://localhost:${PORT}/ws`);
+    console.log(`HTTP server on http://localhost:${PORT}`);
+    console.log(`REST     → GET  /api/campaigns`);
+    console.log(`GraphQL  → POST /graphql`);
+    console.log(`WS       → ws(s)://<host>/ws`);
   });
-}
 
-startServer();
+  // Graceful shutdown
+  const shutdown = () => {
+    console.log('Shutting down...');
+    server.close(() => process.exit(0));
+    setTimeout(() => process.exit(0), 5000);
+  };
+
+  process.on('SIGTERM', shutdown);
+  process.on('SIGINT', shutdown);
+})();
