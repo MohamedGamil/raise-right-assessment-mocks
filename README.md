@@ -8,14 +8,10 @@
 Simply run: `npm install`
 
 ## Running Mock APIs Servers
-- **REST**: `npm run start:rest` (default http://localhost:4000)
-- **GraphQL**: `npm run start:graphql` (default http://localhost:4001)
-- **WebSocket**: `npm run start:ws` (default ws://localhost:4002)
-
-- **Or start all at once:**
-    ```bash
-    npx concurrently "npm:serve-rest" "npm:serve-graphql" "npm:serve-ws"
-    ```
+- Start servers using `npm run start:all`
+- **REST**: `http://localhost:4000/api/campaigns`
+- **GraphQL**: `http://localhost:4000/graphql`
+- **WebSocket**: `ws://localhost:4000/ws`
 
 - **Alternatively, use docker to quickly run all mock APIs:**
     ```bash
@@ -58,7 +54,7 @@ Simply run: `npm install`
   - Important: The GraphQL server is instrumented to sometimes return partial results accompanied by an `errors` array (HTTP 200). Clients must check `response.errors` and still render available `data`.
 
 - **WebSocket**
-  - Connect to: `ws://localhost:4002`
+  - Connect to: `ws://localhost:4000/ws`
   - Server sends periodic `donation` events:
     ```json
     { "type": "donation", "campaignId": "1", "amount": 50, "donor": "system", "id": "...", "timestamp": 123456 }
