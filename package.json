@@ -7,7 +7,7 @@
     "start:rest": "node rest/index.js",
     "start:graphql": "node graphql/index.js",
     "start:ws": "node websocket/index.js",
-    "start:all": "concurrently \"npm:serve-rest\" \"npm:serve-graphql\" \"npm:serve-ws\"",
+    "start:all": "node server.js",
     "serve-rest": "node rest/index.js",
     "serve-graphql": "node graphql/index.js",
     "serve-ws": "node websocket/index.js"
