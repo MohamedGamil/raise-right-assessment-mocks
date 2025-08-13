@@ -8,7 +8,8 @@ const campaigns = [
     description: "Refurnish and extend the masjid area.",
     donors: [
       { name: "Lina", amount: 200 },
-      { name: "Youssef", amount: 50 }
+      { name: "Youssef", amount: 50 },
+      { name: "Fatima", amount: 100 },
     ]
   },
   {
@@ -25,7 +26,9 @@ const campaigns = [
     goal: 12000,
     currentAmount: 7600,
     description: "Hire part-time tutors for math and science.",
-    donors: []
+    donors: [
+      { name: "Youssef", amount: 50 },
+    ]
   },
   {
     id: "4",
